@@ -8,6 +8,14 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type event struct {
+	ID          int    `json:"ID"`
+	Title       string `json:"Title"`
+	Description string `json:"Description"`
+}
+
+type events []event
+
 func homeLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome home!")
 }
