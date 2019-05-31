@@ -11,7 +11,7 @@ import (
 )
 
 type event struct {
-	ID          int    `json:"ID"`
+	ID          string `json:"ID"`
 	Title       string `json:"Title"`
 	Description string `json:"Description"`
 }
@@ -37,9 +37,23 @@ func createEvent(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newEvent)
 }
 
+func getOneEvent(w http.ResponseWriter, r *http.Request) {
+	// Get the ID from the url
+	eventID := mux.Vars(r)["id"]
+
+	// Get the details from an existing event
+	// Use the blank identifier to avoid creating a value that will not be used
+	for _, singleEvent := range events {
+		if singleEvent.ID == eventID {
+			json.NewEncoder(w).Encode(singleEvent)
+		}
+	}
+}
+
 func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/event", createEvent).Methods("POST")
+	router.HandleFunc("/events/{id}", getOneEvent)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
