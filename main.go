@@ -18,6 +18,16 @@ type event struct {
 
 var events []event
 
+func initEvents() {
+	initEvent := event{
+		ID:          "1",
+		Title:       "Introduction to Golang",
+		Description: "Come join us for a chance to learn how golang works and get to eventually try it out",
+	}
+
+	events = append(events, initEvent)
+}
+
 func homeLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome home!")
 }
@@ -81,16 +91,17 @@ func deleteEvent(w http.ResponseWriter, r *http.Request) {
 	for i, singleEvent := range events {
 		if singleEvent.ID == eventID {
 			events = append(events[:i], events[i+1:]...)
-			fmt.Fprintf(w, "Event with ID %v has been deleted successfully", eventID)
+			fmt.Fprintf(w, "The event with ID %v has been deleted successfully", eventID)
 		}
 	}
 }
 
 func main() {
+	initEvents()
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/event", createEvent).Methods("POST")
-	router.HandleFunc("/events", getAllEvents)
+	router.HandleFunc("/events", getAllEvents).Methods("GET")
 	router.HandleFunc("/events/{id}", getOneEvent).Methods("GET")
 	router.HandleFunc("/events/{id}", updateEvent).Methods("PATCH")
 	router.HandleFunc("/events/{id}", deleteEvent).Methods("DELETE")
