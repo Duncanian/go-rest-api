@@ -16,16 +16,14 @@ type event struct {
 	Description string `json:"Description"`
 }
 
-var events []event
+type allEvents []event
 
-func initEvents() {
-	initEvent := event{
+var events = allEvents{
+	{
 		ID:          "1",
 		Title:       "Introduction to Golang",
 		Description: "Come join us for a chance to learn how golang works and get to eventually try it out",
-	}
-
-	events = append(events, initEvent)
+	},
 }
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +33,11 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 func createEvent(w http.ResponseWriter, r *http.Request) {
 	var newEvent event
 	// Convert r.Body into a readable formart
-	reqBody, _ := ioutil.ReadAll(r.Body)
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the event id, title and description only in order to update")
+	}
+
 	json.Unmarshal(reqBody, &newEvent)
 
 	// Add the newly created event to the array of events
@@ -69,7 +71,11 @@ func updateEvent(w http.ResponseWriter, r *http.Request) {
 	eventID := mux.Vars(r)["id"]
 	var updatedEvent event
 	// Convert r.Body into a readable formart
-	reqBody, _ := ioutil.ReadAll(r.Body)
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the event title and description only in order to update")
+	}
+
 	json.Unmarshal(reqBody, &updatedEvent)
 
 	for i, singleEvent := range events {
@@ -97,7 +103,6 @@ func deleteEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	initEvents()
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/event", createEvent).Methods("POST")
