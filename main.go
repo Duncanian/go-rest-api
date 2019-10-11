@@ -82,7 +82,7 @@ func updateEvent(w http.ResponseWriter, r *http.Request) {
 		if singleEvent.ID == eventID {
 			singleEvent.Title = updatedEvent.Title
 			singleEvent.Description = updatedEvent.Description
-			events = append(events[:i], singleEvent)
+			events[i] = singleEvent
 			json.NewEncoder(w).Encode(singleEvent)
 		}
 	}
